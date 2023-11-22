@@ -32,3 +32,5 @@ MSC-France
    ...
    └─Toulouse
 ```
+
+The pre-trained models are available at this [link](https://drive.google.com/drive/folders/1NSZqUdytaDq6yFC188dG8K27YKHgtFGU?usp=sharing).
