@@ -101,11 +101,8 @@ def get_args_parser():
     parser.add_argument('--adapt_sensor', default="SPOT", type=str, help='which sensor is the one on which to adapt')
 
     parser.add_argument('--alpha', default=.1, type=float, help='weight of MSAD loss')
-    parser.add_argument('--label_smoothing', default=0, type=float, help='smoothing cross entropy of MSAD loss')
     parser.add_argument('--use_msad', action='store_true', help='if adding msad loss')
     parser.set_defaults(use_msad=False)
-    parser.add_argument('--patch_wise', action='store_true', help='if compute msad loss among corresponding patches')
-    parser.set_defaults(patch_wise=False)
     parser.add_argument('--msad_embedding_dim', default=65536, type=int, help='embedding of msad')
     parser.add_argument('--msad_proj_dim', default=1024, type=int, help='size of layer of projection')
     parser.add_argument('--pretrained_weights', default='', type=str, help="Path to pretrained weights to use.")
@@ -282,7 +279,7 @@ def train_xstars(args):
         msad_loss = MSADModel(temperature=1.,
                               sat1_embedding=args.msad_proj_dim,
                               sat2_embedding=args.msad_proj_dim,
-                              label_smoothing=args.label_smoothing
+                              label_smoothing=0.3
                               ).cuda()
 
     else:
@@ -409,25 +406,16 @@ def train_one_epoch(student, teacher, teacher_without_ddp, frozen_pretrained, di
 
             #MSAD LOSS TERM
             if msad_loss:
-                if args.patch_wise:
-                    oth_sens_feat = frozen_pretrained.backbone(batch[f"{oth_sensor}_noaugm"].cuda(), patchwise_msad = True)
-                    adapt_sens_feat = student.module.backbone(batch[f"{adapt_sensor}_noaugm"].cuda(), patchwise_msad = True)
+                oth_sens_feat = frozen_pretrained.backbone(batch[f"{oth_sensor}_noaugm"].cuda(), patchwise_msad = True)
+                adapt_sens_feat = student.module.backbone(batch[f"{adapt_sensor}_noaugm"].cuda(), patchwise_msad = True)
 
-                    msad_losses = []
-                    for i in range(oth_sens_feat.shape[1]):
-                        oth_sens_proj_feat = projection(oth_sens_feat[:,i,:])
-                        adapt_sens_proj_feat = projection(adapt_sens_feat[:,i,:])
+                msad_losses = []
+                for i in range(oth_sens_feat.shape[1]):
+                    oth_sens_proj_feat = projection(oth_sens_feat[:,i,:])
+                    adapt_sens_proj_feat = projection(adapt_sens_feat[:,i,:])
 
-                        msad_losses.append(msad_loss(oth_sens_proj_feat, adapt_sens_proj_feat))
-                    loss_msad = torch.mean(torch.tensor(msad_losses))
-
-                else:
-                    oth_sens_feat = []
-                    adapt_sens_feat = []
-                    oth_sens_feat = projection(frozen_pretrained.backbone(batch[f"{oth_sensor}_noaugm"].cuda()))
-                    adapt_sens_feat = projection(student.module.backbone(batch[f"{adapt_sensor}_noaugm"].cuda()))
-
-                    loss_msad = msad_loss(oth_sens_feat, adapt_sens_feat)
+                    msad_losses.append(msad_loss(oth_sens_proj_feat, adapt_sens_proj_feat))
+                loss_msad = torch.mean(torch.tensor(msad_losses))
             else:
                 loss_msad = torch.tensor(0)
 

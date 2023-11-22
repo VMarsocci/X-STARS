@@ -100,11 +100,8 @@ def get_args_parser():
     parser.add_argument('--sensors', default=("SPOT", "Sentinel"), nargs="+", help='which sensor to use')
 
     parser.add_argument('--alpha', default=.1, type=float, help='weight of msad loss')
-    parser.add_argument('--label_smoothing', default=0, type=float, help='smoothing cross entropy msad loss')
     parser.add_argument('--use_msad', action='store_true', help='if adding msad loss')
     parser.set_defaults(use_msad=False)
-    parser.add_argument('--patch_wise', action='store_true', help='if compute msad loss among corresponding patches')
-    parser.set_defaults(patch_wise=False)
     parser.add_argument('--msad_embedding_dim', default=65536, type=int, help='embedding of msad')
     parser.add_argument('--msad_proj_dim', default=1024, type=int, help='size of layer of projection')
 
@@ -260,7 +257,7 @@ def train_xstars(args):
         msad_loss = MSADModel(temperature=1.,
                               sat1_embedding=args.msad_proj_dim,
                               sat2_embedding=args.msad_proj_dim,
-                              label_smoothing=args.label_smoothing
+                              label_smoothing=0.3
                               ).cuda()
     else:
         proj = False
@@ -371,30 +368,21 @@ def train_one_epoch(student, teacher, teacher_without_ddp, dino_loss, data_loade
 
             #MSAD LOSS TERM
             if msad_loss:
-                if args.patch_wise:
-                    no_augm_feat = []
-                    for sensor in sensors:
-                        no_augm_feat.append(student.module.backbone(batch[f"{sensor}_noaugm"].cuda(), patchwise_msad = True))
+                no_augm_feat = []
+                for sensor in sensors:
+                    no_augm_feat.append(student.module.backbone(batch[f"{sensor}_noaugm"].cuda(), patchwise_msad = True))
 
 
-                    msad_losses = []
-                    for i in range(no_augm_feat[0].shape[1]):
-                        proj_feat = []
-                        for j in range(len(sensors)):
-                            proj_feat.append(projection(no_augm_feat[j][:,i,:]))
-
-                        pw_losses_msad = [msad_loss(a, b) for idx, a in enumerate(proj_feat) for b in proj_feat[idx + 1:]]
-                        msad_losses.append(sum(pw_losses_msad))
-
-                    loss_msad = torch.mean(torch.tensor(msad_losses))
-
-                else:
+                msad_losses = []
+                for i in range(no_augm_feat[0].shape[1]):
                     proj_feat = []
-                    for sensor in sensors:
-                        proj_feat.append(projection(student.module.backbone(batch[f"{sensor}_noaugm"].cuda()), sensor = sensor))
-    
-                    loss_msad = [msad_loss(a, b) for idx, a in enumerate(proj_feat) for b in proj_feat[idx + 1:]]
-                    loss_msad = sum(loss_msad)
+                    for j in range(len(sensors)):
+                        proj_feat.append(projection(no_augm_feat[j][:,i,:]))
+
+                    pw_losses_msad = [msad_loss(a, b) for idx, a in enumerate(proj_feat) for b in proj_feat[idx + 1:]]
+                    msad_losses.append(sum(pw_losses_msad))
+
+                loss_msad = torch.mean(torch.tensor(msad_losses))
             else:
                 loss_msad = torch.tensor(0)
 
