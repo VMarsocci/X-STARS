@@ -5,12 +5,12 @@ It is strongly inspired by [DINO](https://github.com/facebookresearch/dino). You
 
 To run the pretraining from scratch, you can run:
 ```bash
-python pretraining.py --arch vit_tiny --data_path data/path/ --output_dir /output/directory --epochs 400 --batch_size_per_gpu 4 --use_msad --patch_wise --label_smoothing 0.3 --msad_embedding_dim 192 --sensors Sentinel Landsat --mean 0.15590523 0.15850738 0.10111853 --std 0.14238988 0.11567883 0.0910672
+python pretraining.py --arch vit_tiny --data_path data/path/ --output_dir /output/directory --epochs 400 --batch_size_per_gpu 4 --use_msad --msad_embedding_dim 192 --sensors Sentinel Landsat --mean 0.15590523 0.15850738 0.10111853 --std 0.14238988 0.11567883 0.0910672
 ```
 
 To run the continual pretraining, you can run:
 ```bash
-python continual_pretraining.py --arch vit_tiny --data_path data/path/ --output_dir /output/directory --epochs 400 --batch_size_per_gpu 12 --use_msad --patch_wise --label_smoothing 0.3 --msad_embedding_dim 192 --sensors Sentinel Landsat --mean 0.15590523 0.15850738 0.10111853 --std 0.14238988 0.11567883 0.0910672 --adapt_sensor Landsat --pretrained_weights pretrain/net/weights 
+python continual_pretraining.py --arch vit_tiny --data_path data/path/ --output_dir /output/directory --epochs 400 --batch_size_per_gpu 12 --use_msad --msad_embedding_dim 192 --sensors Sentinel Landsat --mean 0.15590523 0.15850738 0.10111853 --std 0.14238988 0.11567883 0.0910672 --adapt_sensor Landsat --pretrained_weights pretrain/net/weights 
 ```
 
 The dataset class is shaped on the MSC-France dataset, presented in the already mentioned paper. The name of the images is the same for each sensor. The directories are organized as follows:
