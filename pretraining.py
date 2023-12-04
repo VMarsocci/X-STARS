@@ -10,7 +10,6 @@ import sys
 import time
 
 import numpy as np
-import random
 import torch
 import torch.nn as nn
 import torch.distributed as dist

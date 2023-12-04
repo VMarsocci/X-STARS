@@ -12,15 +12,14 @@ import time
 from pathlib import Path
 
 import numpy as np
-import random
 import torch
 import torch.nn as nn
 import torch.distributed as dist
 import torch.backends.cudnn as cudnn
 import torch.nn.functional as F
 
-from torch.utils.data import Subset, ConcatDataset
-from torchvision import datasets, transforms
+from torch.utils.data import Subset
+from torchvision import transforms
 from torchvision import models as torchvision_models
 from PIL import Image
 

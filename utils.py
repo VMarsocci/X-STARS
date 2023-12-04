@@ -17,6 +17,7 @@ Misc functions.
 Mostly copy-paste from torchvision references or other public repos like DETR:
 https://github.com/facebookresearch/detr/blob/master/util/misc.py
 """
+import argparse
 import datetime
 import math
 import os
@@ -24,6 +25,7 @@ import random
 import subprocess
 import sys
 import time
+import warnings
 
 from collections import defaultdict, deque
 
@@ -1021,7 +1023,7 @@ def load_model(
         print("unexpected keys: ", unex)
         print("Checkpoints after adapting")
         print("Resume checkpoint %s" % args.pretrained_weights)
-        if optimizer is not None and scaler is not None:
+        if optimizer is not None and loss_scaler is not None:
             optimizer.load_state_dict(checkpoint["optimizer"])
             if args.restart:
                 args.start_epoch = 0

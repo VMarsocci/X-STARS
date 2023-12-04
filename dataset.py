@@ -1,8 +1,4 @@
-import json
-import numpy as np
-import os
 import torch
-import torch.nn as nn
 
 from PIL import Image
 from torchvision import transforms
@@ -24,11 +20,10 @@ class CustomImageFolder(ImageFolder):
 
         self.root = root
         self.msad_transform = msad_transform
-        self.sel_sensors = sensors
-        self.av_sensors = ["SPOT", "Sentinel", "Landsat"]
-        self.ex_sensors = list(set(self.av_sensors) - set(sensors))
-        print("AVAILABLE SENSORS: ", self.av_sensors)
-        print("SELECTED SENSORS: ", self.sel_sensors)
+        self.selected_sensors = sensors
+        self.available_sensors = ["SPOT", "Sentinel", "Landsat"]
+        print("AVAILABLE SENSORS: ", self.available_sensors)
+        print("SELECTED SENSORS: ", self.selected_sensors)
         self.normalizations = {
             "Landsat": transforms.Normalize(
                 [0.27059479, 0.27839213, 0.18060363], [0.1741122, 0.14797395, 0.125955]
@@ -48,16 +43,15 @@ class CustomImageFolder(ImageFolder):
         path, target = self.imgs[index]
 
         sensor = path.split("/")[-3]
-        img_name = os.path.basename(path)
         img = Image.open(path).convert("RGB")
 
         # Load image from other directory with the same name
         if self.msad_transform:
-            oth_av_sensors = list(set(self.sel_sensors) - set(sensor))
+            oth_available_sensors = list(set(self.selected_sensors) - set(sensor))
             batch[f"{sensor}_noaugm"] = self.normalizations[sensor](
                 self.msad_transform(img)
             )
-            for oth_sensor in oth_av_sensors:
+            for oth_sensor in oth_available_sensors:
                 oth_im_path = path.replace(sensor, oth_sensor)
                 oth_im = Image.open(oth_im_path).convert("RGB")
                 batch[f"{oth_sensor}_noaugm"] = self.normalizations[oth_sensor](

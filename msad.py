@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -30,7 +29,7 @@ class ProjectionHead(nn.Module):
             self.dropout = nn.Dropout(dropout)
             self.layer_norm = nn.LayerNorm(projection_dim)
 
-    def forward(self, x, sensor="SPOT"):
+    def forward(self, x):
         if self.projection_dim > 1024:
             projected = self.projection1(x)
             projected = self.gelu1(projected)

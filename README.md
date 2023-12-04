@@ -41,3 +41,14 @@ MSC-France
 ## Model weights
 
 The pre-trained models are available at this [link](https://drive.google.com/drive/folders/1NSZqUdytaDq6yFC188dG8K27YKHgtFGU?usp=sharing).
+
+## Citation
+
+```
+@article{MarsocciXstars2023,
+	title        = {Cross-sensor self-supervised training and alignment for remote sensing},
+	author       = {Marsocci, Valerio and Audebert, Nicolas},
+	year         = 2023,
+	month        = {nov}
+}
+```
