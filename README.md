@@ -1,6 +1,6 @@
 # X-STARS
 
-This is the official PyTorch implementation of the "*Cross-sensor self-supervised training and alignment for remote sensing*" paper.
+This is the official PyTorch implementation of the ["*Cross-sensor self-supervised training and alignment for remote sensing*"](https://arxiv.org/pdf/2405.09922) paper.
 
 This repository builds upon the original [DINO implementation](https://github.com/facebookresearch/dino). You can follow that repo to install the required packages.
 
