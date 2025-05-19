@@ -1,6 +1,6 @@
 # X-STARS
 
-This is the official PyTorch implementation of the ["*Cross-sensor self-supervised training and alignment for remote sensing*"](https://arxiv.org/abs/2405.09922) paper.
+This is the official PyTorch implementation of the ["*Cross-sensor self-supervised training and alignment for remote sensing*"](https://arxiv.org/abs/2405.09922) paper, published on [JSTARS](https://ieeexplore.ieee.org/abstract/document/10982156).
 
 This repository builds upon the original [DINO implementation](https://github.com/facebookresearch/dino). You can follow that repo to install the required packages.
 
@@ -18,7 +18,7 @@ python continual_pretraining.py --arch vit_tiny --data_path data/path/ --output_
 
 ## Dataset
 
-The dataset class is shaped on the MSC-France dataset, presented in the already mentioned paper. The name of the images is the same for each sensor. The directories are organized as follows:
+The dataset class is shaped on the *MSC-France dataset*, presented in the already mentioned paper. The name of the images is the same for each sensor. The directories are organized as follows:
 ```bash
 MSC-France
 ├─Sentinel
@@ -38,6 +38,8 @@ MSC-France
    └─Toulouse
 ```
 
+Dataset is downloadable [here](https://www.eotdl.com/datasets/MSC-France).
+
 ## Model weights
 
 The pre-trained models are available at this [link](https://drive.google.com/drive/folders/1NSZqUdytaDq6yFC188dG8K27YKHgtFGU?usp=sharing).
@@ -45,12 +47,11 @@ The pre-trained models are available at this [link](https://drive.google.com/dri
 ## Citation
 
 ```
-@misc{marsocci2024crosssensor,
-      title={Cross-sensor self-supervised training and alignment for remote sensing}, 
-      author={Valerio Marsocci and Nicolas Audebert},
-      year={2024},
-      eprint={2405.09922},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@article{marsocci2025cross,
+  title={Cross-sensor self-supervised training and alignment for remote sensing},
+  author={Marsocci, Valerio and Audebert, Nicolas},
+  journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing},
+  year={2025},
+  publisher={IEEE}
 }
 ```
